@@ -442,3 +442,495 @@ const products = [
 7. **Depuración y Manejo de Errores**:
    - Implementar métodos de depuración para el manejo de errores y validación.
    - **Concepto de JavaScript aplicado**: Depuración, Manejo de Errores.
+
+
+# Solucion
+
+## Punto 1
+
+```javascript
+class Task { //Se crea la clase Taks que permitira agregar una nueva tarea y modificar el estado de esta
+    constructor(id, description, completed = false) { // se crea el constructor, el cual permitira inicializar la clase
+        this.id = id; // la variable global en la clase this.id sera el valor del parametro recibido id
+        this.description = description; // la variable global en la clase this.description sera el valor del parametro recibido description
+        this.completed = completed; // la variable global en la clase this.completed sera el valor del parametro recibido completed
+    }
+
+    toggleComplete() { // se crea el metodo toggleComplete, el cual permitira cambiar el estado de la tarea
+        this.completed = !this.completed; // this.completed es igual a su contrario, es decir si es falso pasa a true y viceversa
+    }
+}
+
+class TaskManager { // se crea la clase TaskManager, dentro de la cual se llevara a cabo la mayoria de procesos de este codigo
+    constructor() { // nuevamente el contructor permite inicializar la clase
+        this.tasks = JSON.parse(localStorage.getItem('tasks')) || []; // recupera del localstorage la vble tasks, lo parsea como js, si no existe retorna una lista vacia y lo asgina a this.tasks
+        this.loadTasks(); // llama la funcion encargada de mostrar cada tarea con sus repectivas opciones
+        this.id = undefined; // vuelve a poner undefined this.id para diferenciar cuando se actualice o cuando se agregue una nueva tarea
+    }
+
+    addTask(description) { // el metodo addTask recibe tiene como parametro description, que sera el mensaje o la modificacion del mensaje de una tarea
+        if (this.id == undefined) { // si this.id es undefined agregara una nueva tarea
+            const id = this.tasks.length ? this.tasks[this.tasks.length - 1].id + 1 : 1; //verifica si hay elementos en la lista de tareas, si los ahi aumenta +1 al anterior id y si no lo hay asigna el id 1
+            const task = new Task(id, description); // instancia la clase Task
+            this.tasks.push(task); // guarda al final de la lista
+        } else {
+            this.updateTask(description)
+        }
+        this.saveTasks();
+        this.renderTasks();
+        
+    }
+
+    deleteTask(id) {
+        this.tasks = this.tasks.filter(task => task.id !== id);
+        this.saveTasks();
+        this.renderTasks();
+    }
+
+    showTaskInfo(id, description) {
+        this.id = id;
+        const preTask = document.getElementById("new-task");
+        preTask.value = description;
+    }
+
+    updateTask(taskModified) {
+        const taksFound = this.tasks.findIndex(task => task.id == this.id);
+        console.log(taksFound); // prueba;
+        this.tasks[taksFound].description = taskModified;
+        this.id = undefined;
+        this.saveTasks();
+        this.renderTasks();
+    }
+
+
+    toggleTaskComplete(id) {
+        const task = this.tasks.find(task => task.id === id);
+        if (task) {
+            const taskIntance = new Task(task.id, task.description, task.completed);
+            taskIntance.toggleComplete();
+            this.tasks = this.tasks.map(taskTog => (taskTog.id === id ? taskIntance : taskTog));
+            this.saveTasks();
+            this.renderTasks();
+        } else {
+            alert("Tarea no encontrada")
+        }
+    }
+
+    saveTasks() {
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    }
+
+    loadTasks() {
+        this.renderTasks();
+    }
+
+    renderTasks() {
+        const taskList = document.getElementById('task-list');
+        taskList.innerHTML = '';
+        this.tasks.forEach(task => {
+            const item = document.createElement('li');
+            item.textContent = task.description;
+            item.className = task.completed ? 'completed' : '';
+            item.addEventListener('click', () => this.toggleTaskComplete(task.id));
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Eliminar';
+            deleteButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el evento se propague al elemento padre, ¿Por qué? Porque el evento click en el botón también se propaga al elemento li.
+                this.deleteTask(task.id);
+            });
+
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Editar';
+            updateButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el evento se propague al elemento padre, ¿Por qué? Porque el evento click en el botón también se propaga al elemento li.
+                this.showTaskInfo(task.id, task.description);
+            });
+
+            item.appendChild(updateButton);
+            item.appendChild(deleteButton);
+            taskList.appendChild(item);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const taskManager = new TaskManager();
+
+    document.getElementById('add-task').addEventListener('click', () => {
+        const newTask = document.getElementById('new-task').value;
+        if (newTask) {
+            taskManager.addTask(newTask);
+            document.getElementById('new-task').value = '';
+        }
+    });
+});
+
+```
+
+
+## Punto 2
+
+```javascript
+class Note {
+    constructor(id, description, itsImportant = false) {
+        this.id = id;
+        this.description = description;
+        this.itsImportant = itsImportant;
+    }
+
+    toggleComplete() {
+        this.itsImportant = !this.itsImportant;
+    }
+}
+
+class NoteManager {
+    constructor() {
+        this.notes = JSON.parse(localStorage.getItem('notes')) || [];
+        this.loadNotes();
+        this.id = undefined;
+    }
+
+    addNote(description) {
+        if (this.id == undefined) {
+            const id = this.notes.length ? this.notes[this.notes.length - 1].id + 1 : 1;
+            const note = new Note(id, description);
+            this.notes.push(note);
+        } else {
+            this.updateNote(description)
+        }
+        this.saveNotes();
+        this.renderNotes();
+        
+    }
+
+    deleteNote(id) {
+        this.notes = this.notes.filter(note => note.id !== id);
+        this.saveNotes();
+        this.renderNotes();
+    }
+
+    showNoteInfo(id, description) {
+        this.id = id;
+        const preNote = document.getElementById("new-note");
+        preNote.value = description;
+    }
+
+
+    updateNote(noteModified) {
+        const noteFound = this.notes.findIndex(note => note.id == this.id);
+        console.log(noteFound); // prueba;
+        this.notes[noteFound].description = noteModified;
+        this.id = undefined;
+        this.saveNotes();
+        this.renderNotes();
+    }
+
+
+    toggleNoteComplete(id) {
+        const note = this.notes.find(note => note.id === id);
+        if (note) {
+            const noteIntance = new Note(note.id, note.description, note.itsImportant);
+            noteIntance.toggleComplete();
+            this.notes = this.notes.map(noteTog => (noteTog.id === id ? noteIntance : noteTog));
+            this.saveNotes();
+            this.renderNotes();
+        } else {
+            alert("Tarea no encontrada")
+        }
+    }
+
+    saveNotes() {
+        localStorage.setItem('notes', JSON.stringify(this.notes));
+    }
+
+    loadNotes() {
+        this.renderNotes();
+    }
+
+    renderNotes() {
+        const noteList = document.getElementById('notes-list');
+        noteList.innerHTML = '';
+        this.notes.forEach(note => {
+            const item = document.createElement('li');
+            // item.textContent = note.description;
+            if (note.itsImportant) {
+                const strongText = document.createElement('strong');
+                strongText.textContent = note.description;
+                item.appendChild(strongText);
+            } else {
+                item.textContent = note.description;
+            }
+            
+            item.className = note.itsImportant ? 'itsImportant' : '';
+            item.addEventListener('click', () => this.toggleNoteComplete(note.id));
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Eliminar';
+            deleteButton.addEventListener('click', (e) => {
+                this.deleteNote(note.id);
+            });
+
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Editar';
+            updateButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el evento se propague al elemento padre, ¿Por qué? Porque el evento click en el botón también se propaga al elemento li.
+                this.showNoteInfo(note.id, note.description);
+            });
+
+            item.appendChild(updateButton);
+            item.appendChild(deleteButton);
+            noteList.appendChild(item);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const noteManager = new NoteManager();
+
+    document.getElementById('add-note').addEventListener('click', () => {
+        const newNote = document.getElementById('new-note').value;
+        if (newNote) {
+            noteManager.addNote(newNote);
+            document.getElementById('new-note').value = '';
+        }
+    });
+});
+```
+
+
+## Punto 3
+
+```javascript
+document.getElementById('fetch-posts').addEventListener('click', () => {
+    fetchPosts();
+});
+
+const fetchPosts = () => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(posts => {
+            console.log(posts)
+            displayPosts(posts);
+        })
+        .catch(error => {
+            displayError(error);
+        });
+};
+
+const displayPosts = (posts) => {
+    const postList = document.getElementById('post-list');
+    postList.innerHTML = '';
+    posts.forEach(post => {
+        const listItem = document.createElement('li');
+        const textItem = document.createElement('p');
+        listItem.textContent = `Title: ${post.title}`;
+        textItem.textContent =`Post: ${post.body}`;
+        postList.appendChild(listItem);
+        postList.appendChild(textItem);
+    });
+};
+
+const displayError = (error) => {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = `Error: ${error.message}`;
+};
+```
+
+
+## Punto 4
+
+```javascript
+let data
+const fetchPosts = () => {
+    fetch('https://api.escuelajs.co/api/v1/products')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(posts => {
+            data = posts
+            console.log(posts)
+            displayPosts(posts);
+        })
+        .catch(error => {
+            displayError(error);
+        });
+};
+
+const displayPosts = (posts) => {
+    const tbody = document.getElementById('tbodyt');
+    tbody.innerHTML = '';
+    posts.forEach(post => {
+        tbody.innerHTML += `
+        <tr>
+            <td scope="col">${post.id}</td>
+            <td scope="col">${post.category.name}</td>
+            <td scope="col">${post.title}</td>
+            <td scope="col">$${post.price}</td>
+            <td scope="col"><img src=${post.images[0]} width="100px" alt="${post.title}"></td>
+            <td scope="col">${post.description}</td>
+        </tr>
+        `;
+    });
+}
+
+const InfoFiltered = (word) => {
+    console.log(word)
+    const resultsFiltered = data.filter((post) => post.category.name === word)
+    console.log(resultsFiltered)
+    displayPosts(resultsFiltered)
+}
+
+const InfoFound = (wordToSearch) => {
+    if (wordToSearch) {
+        resultsFound = data.filter((post) => post.title.includes(wordToSearch));
+        console.log(resultsFound)
+        displayPosts(resultsFound)
+        
+    }
+}
+
+
+const displayError = (error) => {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = `Error: ${error.message}`;
+};
+
+const filterOption = document.getElementById('filter-option');
+filterOption.addEventListener('change', async () => {
+    const category = filterOption.value;
+    InfoFiltered(category)
+})
+
+document.getElementById('search-product').addEventListener('click', () => {
+    const wordToSearch = document.getElementById('search-by').value;
+    InfoFound(wordToSearch)
+})
+
+fetchPosts()
+```
+
+
+## Punto 5
+
+```javascript
+const products = [
+    { id: 1, name: 'Laptop', category: 'Electronics', price: 1500, stock: 10 },
+    { id: 2, name: 'Smartphone', category: 'Electronics', price: 800, stock: 20 },
+    { id: 3, name: 'Headphones', category: 'Electronics', price: 100, stock: 30 },
+    { id: 4, name: 'T-shirt', category: 'Clothing', price: 20, stock: 50 },
+    { id: 5, name: 'Jeans', category: 'Clothing', price: 50, stock: 40 },
+    { id: 6, name: 'Sneakers', category: 'Clothing', price: 80, stock: 30 },
+    { id: 7, name: 'Backpack', category: 'Accessories', price: 40, stock: 25 },
+    { id: 8, name: 'Watch', category: 'Accessories', price: 60, stock: 20 },
+    { id: 9, name: 'Sunglasses', category: 'Accessories', price: 30, stock: 35 }
+];
+
+const tbody = document.getElementById('tbody');
+
+document.getElementById('load-products').addEventListener('click', () => {
+    displayPosts(products);
+});
+
+document.getElementById('sum-products').addEventListener('click', () => {
+    totalPrice(products);
+});
+
+document.getElementById('verify-av').addEventListener('click', () => {
+    verifyAvailable(products);
+});
+
+document.getElementById('load-list').addEventListener('click', () => {
+    createList(products);
+});
+
+
+
+const filterOption = document.getElementById('filter-option');
+filterOption.addEventListener('change', async () => {
+    const category = filterOption.value;
+    InfoFiltered(category)
+})
+
+document.getElementById('search-product').addEventListener('click', () => {
+    const wordToSearch = document.getElementById('search-by').value;
+    InfoFound(wordToSearch)
+})
+
+
+const displayPosts = (products) => {
+    tbody.innerHTML = '';
+    products.forEach(product => {
+        tbody.innerHTML += `
+        <tr>
+            <td scope="col">${product.id}</td>
+            <td scope="col">${product.category}</td>
+            <td scope="col">${product.name}</td>
+            <td scope="col">$${product.price}</td>
+            <td scope="col">${product.stock}</td>
+        </tr>
+        `;
+    });
+};
+
+
+const totalPrice = (products) => {
+    tbody.innerHTML = '';
+    const total = products.reduce((accumulator, product) => accumulator + product.price, 0);
+    console.log('Precio total de todos los productos:', total);
+    const totalView = document.createElement('p');
+    totalView.textContent = `Precio total de todos los productos: $${total}`;
+    tbody.appendChild(totalView);
+}
+
+
+const InfoFiltered = (word) => {
+    console.log(word)
+    const resultsFiltered = products.filter((product) => product.category === word)
+    console.log(resultsFiltered)
+    displayPosts(resultsFiltered)
+}
+
+
+const InfoFound = (wordToSearch) => {
+    if (wordToSearch) {
+        resultsFound = products.filter((product) => product.name.includes(wordToSearch));
+        console.log(resultsFound)
+        displayPosts(resultsFound)
+    }
+}
+
+const verifyAvailable = (products) => {
+    const allAvailable = products.every(product => product.stock > 0);
+    if (allAvailable) {
+        const Available = document.createElement('p');
+        Available.textContent = 'Todos los productos están disponibles.';
+        tbody.appendChild(Available);
+        console.log('Todos los productos están disponibles.');
+    } else {
+        const Available = document.createElement('p');
+        Available.textContent = 'No todos los productos están disponibles.';
+        tbody.appendChild(Available);
+        console.log('No todos los productos están disponibles.');
+    }
+}
+
+
+const createList = (products) => {
+    const productNames = products.map(product => product.name);
+    const list = document.createElement('p');
+    list.textContent = `Lista de nombres de productos:, ${productNames}`;
+    tbody.appendChild(list);
+    console.log('Lista de nombres de productos:', productNames);
+}
+
+
+```
