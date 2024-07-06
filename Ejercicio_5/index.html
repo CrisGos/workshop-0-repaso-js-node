@@ -10,12 +10,15 @@
 
 <body>
   <div id="app">
-    <h1>Productos Tienda Platzi</h1>
-    <!-- La etiqueta <h1> se utiliza para definir un encabezado de nivel 1 en una página web. -->
-    <input type="text" id="search-by" placeholder="Buscar Nombre">
-    <!-- La etiqueta <input> se utiliza para crear campos de entrada en formularios. El atributo type se utiliza para especificar el tipo de campo (e.g., texto). El atributo id se utiliza para identificar un campo de forma única. El atributo placeholder se utiliza para mostrar un texto de ayuda en el campo. -->
-    <button id="search-product">Buscar</button>
+    <h1>Listado de Productos</h1>
+    <button id="fetch-posts">Cargar Todos</button>
+    <ul id="post-list"></ul>
 
+    <!-- La etiqueta <h1> se utiliza para definir un encabezado de nivel 1 en una página web. -->
+      <input type="text" id="search-by" placeholder="Buscar Nombre">
+      <!-- La etiqueta <input> se utiliza para crear campos de entrada en formularios. El atributo type se utiliza para especificar el tipo de campo (e.g., texto). El atributo id se utiliza para identificar un campo de forma única. El atributo placeholder se utiliza para mostrar un texto de ayuda en el campo. -->
+      <button id="search-product">Buscar</button>
+  
     <select name="select" id="filter-option">
       <option value="Todos" selected>Todos</option>
       <option value="Clothes">Ropa</option>

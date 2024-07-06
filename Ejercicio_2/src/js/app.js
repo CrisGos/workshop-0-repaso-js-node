@@ -93,7 +93,6 @@ class NoteManager {
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Eliminar';
             deleteButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evitar que el evento se propague al elemento padre, ¿Por qué? Porque el evento click en el botón también se propaga al elemento li.
                 this.deleteNote(note.id);
             });
 
