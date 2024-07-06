@@ -43,13 +43,9 @@ class TaskManager {
     }
 
     updateTask(taskModified) {
-        this.tasks.forEach(element => {
-            if (element.id == this.id) {
-                const taksPosition = this.tasks.findIndex(found => found == element)
-                console.log(taksPosition); // prueba
-                this.tasks[taksPosition].description = taskModified
-            }
-        });
+        const taksFound = this.tasks.findIndex(task => task.id == this.id);
+        console.log(taksFound); // prueba;
+        this.tasks[taksFound].description = taskModified;
         this.id = undefined;
         this.saveTasks();
         this.renderTasks();
@@ -59,9 +55,13 @@ class TaskManager {
     toggleTaskComplete(id) {
         const task = this.tasks.find(task => task.id === id);
         if (task) {
-            task.toggleComplete();
+            const taskIntance = new Task(task.id, task.description, task.completed);
+            taskIntance.toggleComplete();
+            this.tasks = this.tasks.map(taskTog => (taskTog.id === id ? taskIntance : taskTog));
             this.saveTasks();
             this.renderTasks();
+        } else {
+            alert("Tarea no encontrada")
         }
     }
 

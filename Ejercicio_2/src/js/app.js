@@ -42,14 +42,11 @@ class NoteManager {
         preNote.value = description;
     }
 
+
     updateNote(noteModified) {
-        this.notes.forEach(element => {
-            if (element.id == this.id) {
-                const taksPosition = this.notes.findIndex(found => found == element)
-                console.log(taksPosition); // prueba
-                this.notes[taksPosition].description = noteModified
-            }
-        });
+        const noteFound = this.notes.findIndex(note => note.id == this.id);
+        console.log(noteFound); // prueba;
+        this.notes[noteFound].description = noteModified;
         this.id = undefined;
         this.saveNotes();
         this.renderNotes();
@@ -59,9 +56,13 @@ class NoteManager {
     toggleNoteComplete(id) {
         const note = this.notes.find(note => note.id === id);
         if (note) {
-            note.toggleComplete();
+            const noteIntance = new Note(note.id, note.description, note.itsImportant);
+            noteIntance.toggleComplete();
+            this.notes = this.notes.map(noteTog => (noteTog.id === id ? noteIntance : noteTog));
             this.saveNotes();
             this.renderNotes();
+        } else {
+            alert("Tarea no encontrada")
         }
     }
 

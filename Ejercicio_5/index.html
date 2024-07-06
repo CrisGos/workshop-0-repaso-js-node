@@ -11,8 +11,10 @@
 <body>
   <div id="app">
     <h1>Listado de Productos</h1>
-    <button id="fetch-posts">Cargar Todos</button>
-    <ul id="post-list"></ul>
+    <button id="load-products">Cargar Todos</button>
+    <button id="sum-products">Sumar Precio</button>
+    <button id="verify-av">Disponibilidad</button>
+    <button id="load-list">Lista</button>
 
     <!-- La etiqueta <h1> se utiliza para definir un encabezado de nivel 1 en una página web. -->
       <input type="text" id="search-by" placeholder="Buscar Nombre">
@@ -20,12 +22,10 @@
       <button id="search-product">Buscar</button>
   
     <select name="select" id="filter-option">
-      <option value="Todos" selected>Todos</option>
-      <option value="Clothes">Ropa</option>
+      <option value="ne" selected>-</option>
+      <option value="Clothing">Ropa</option>
       <option value="Electronics">Tecnologia</option>
-      <option value="Furniture">Muebles</option>
-      <option value="Shoes">Zapatos</option>
-      <option value="Miscellaneous">Varios</option>
+      <option value="Accessories">Muebles</option>
     </select>
 
     <table class="table">
@@ -35,11 +35,10 @@
           <th scope="col">Categoria</th>
           <th scope="col">Producto</th>
           <th scope="col">Precio por Unidad</th>
-          <th scope="col">Imagen </th>
-          <th scope="col">Descripcion</th>
+          <th scope="col">Cantidad</th>
         </tr>
       </thead>
-      <tbody id="tbodyt">
+      <tbody id="tbody">
 
       </tbody>
     </table>
